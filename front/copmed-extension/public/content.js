@@ -14,7 +14,8 @@ function extractTextFromElement(selector, index) {
   return null;
 }
 
-// Replica a extração dos dados dinâmicos (peso, altura, etc.)
+// Replica a extração dos dados dinâmicos(peso, altura, etc.) presentes na função do app react, já que 
+// não é possível reutilizar a função já criada
 function extractDinamicData() {
   const inputs = [
     { input: `input[f_prontuario="peso"]`, role: 'peso' },

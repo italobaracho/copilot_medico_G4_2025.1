@@ -25,7 +25,7 @@ except FileNotFoundError as e:
      raise
 
 # Configurações do Modelo 
-MODEL_NAME = "gemini-1.5-flash-latest" # Movido para constante
+MODEL_NAME = "gemini-2.0-flash-001" # Movido para constante
 SAFETY_SETTINGS = {
     HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
