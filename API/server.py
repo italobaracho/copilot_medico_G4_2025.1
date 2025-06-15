@@ -13,7 +13,7 @@ from backend import patient_db # Importar o novo módulo
 app = Flask(__name__)
 CORS(app)
 
-# LEITURA DE DADOS AMPLIMED (PRONTUÁRIO NO BROWSER) ESTÁ FUNCIONANDO, FOI ADICIONADA UMA IMPLEMENTAÇÃO INICIAL PARA FILTRAGEM DE DADOS:
+# LEITURA DE DADOS AMPLIMED (PRONTUÁRIO NO BROWSER) NÃO ESTÁ FUNCIONANDO, MAS FOI ADICIONADA UMA IMPLEMENTAÇÃO INICIAL PARA FILTRAGEM DE DADOS:
 @app.route('/api/extracted-data', methods=['POST'])
 def receive_extracted_data():
     try:
@@ -39,9 +39,9 @@ def receive_extracted_data():
                        print(f"Item de dado ignorado por formato inválido: {item}")
         else:
              formatted_patient_data += str(data.get('extracted_content', ''))
-
-        # Opcional: Remover nomes dos dados formatados antes de enviar para IA ou salvar
-        # formatted_patient_data_filtered = text_filter.remover_nomes(formatted_patient_data)
+        
+        # Remover nomes dos dados formatados antes de enviar para IA ou salvar
+        formatted_patient_data = text_filter.remover_nomes(formatted_patient_data)
 
         print(f"\nEnviando dados extraídos para Gemini (Paciente: {patient_id}):\n{formatted_patient_data}")
         
