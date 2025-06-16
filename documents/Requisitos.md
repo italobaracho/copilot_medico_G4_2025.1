@@ -73,7 +73,7 @@ O CoPilot Médico é uma solução de suporte à decisão clínica que visa auxi
 
 ###
 
-## US006 - CComo Médico, desejo que minhas informações sensíveis sejam protegidas, para garantir a conformidade com a Lei Geral de Proteção de Dados (LGPD).
+## US006 - Como Médico, desejo que minhas informações sensíveis sejam protegidas, para garantir a conformidade com a Lei Geral de Proteção de Dados (LGPD).
 
 ### Critérios de Aceite
 
