@@ -39,18 +39,30 @@ def receive_extracted_data():
                        print(f"Item de dado ignorado por formato inválido: {item}")
         else:
              formatted_patient_data += str(data.get('extracted_content', ''))
-
-        # Opcional: Remover nomes dos dados formatados antes de enviar para IA ou salvar
-        # formatted_patient_data_filtered = text_filter.remover_nomes(formatted_patient_data)
+        
+        
 
         print(f"\nEnviando dados extraídos para Gemini (Paciente: {patient_id}):\n{formatted_patient_data}")
         
+
+
+
+
         # Adicionar os dados extraídos como uma mensagem ao histórico
         # considerar como uma entrada do "usuário" para fins de fluxo de conversação
-        patient_db.add_message_to_history(patient_id, "user", f"Dados extraídos da página: {formatted_patient_data}")
+        nome = text_filter.retornar_nome(formatted_patient_data)
+
+        formatted_patient_data = text_filter.remover_nomes(formatted_patient_data)
+
+        patient_db.add_message_to_history(f"Nome: {nome}. {patient_id}", "user" , f"Dados extraídos da página: {formatted_patient_data}")
+
+        # Remover nomes dos dados formatados antes de enviar para IA ou salvar
         
+
         ai_response = gemini_connection.send_message(patient_id, formatted_patient_data)
         patient_db.add_message_to_history(patient_id, "model", ai_response)
+
+        print(formatted_patient_data)
 
         response_data = {
             "status": "success",
