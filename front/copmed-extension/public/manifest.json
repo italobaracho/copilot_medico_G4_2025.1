@@ -1,5 +1,5 @@
 {
-    "manifest_version" : 3,
+    "manifest_version": 3,
     "version": "1.0.0",
     "name": "Copmed Extension",
     "action": {
@@ -11,12 +11,12 @@
     "permissions": [
         "scripting",
         "activeTab",
-        "storage",
-        "*://localhost/*"
+        "storage"
+   
     ],
-    "host_permissions": [
-        "http://*/*",
-        "https://*/*"
+    "host_permissions": [ 
+        "http://localhost:3001/*" 
+    
     ],
     "icons": {
         "32": "copilot-icon.png",

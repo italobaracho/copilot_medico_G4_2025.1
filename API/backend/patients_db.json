@@ -1,0 +1,26 @@
+{
+  "44ecc6a3-596b-4d92-816f-3c4e5657c2b8": {
+    "name": "João Batista",
+    "chat_history": [],
+    "consultations": [
+      {
+        "id": "e763070b-39db-4b73-a719-981ce02d0b25",
+        "title": "Primeira Consulta",
+        "date": "2025-07-01T01:04:59.990319",
+        "chat_history": []
+      }
+    ]
+  },
+  "fcc34725-c68c-4983-b08f-5cef164de67a": {
+    "name": "Rafael moura",
+    "chat_history": [],
+    "consultations": [
+      {
+        "id": "e2e651f1-899f-483b-bd83-ce77cbfeaa14",
+        "title": "Primeira Consulta",
+        "date": "2025-07-01T01:13:39.634831",
+        "chat_history": []
+      }
+    ]
+  }
+}
