@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, Key, ReactNode } from 'react';
 import './App.css';
 import Chat from './modules/Chat/chat';
-import { executeScriptOnActiveTab } from './utils/utils';
+import { executeArbitraryScriptOnActiveTab, executeScriptOnActiveTab } from './utils/utils'; 
+
 const SERVER_URL = 'http://localhost:3001';
 
 // --- Tipos ---
@@ -13,765 +14,735 @@ type Message = {
 };
 
 type PatientListItem = {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 };
 
+
 type ConsultationListItem = {
-    id: string;
-    title: string;
-    date: string;
+  id: string;
+  title: string;
+  date?: string; 
+  created_at: string;
 };
 
 // --- Componente Principal App ---
 function App() {
-  // --- Estados do Aplicativo ---
-  const [currentPatientId, setCurrentPatientId] = useState<string | null>(null);
-  const [currentConsultationId, setCurrentConsultationId] = useState<string | null>(null);
-
-  // Estados para Debug
-  const [debugSelector, setDebugSelector] = useState('.note-editable[role="textbox"]');
-  const [debugIndex, setDebugIndex] = useState(0);
-  const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [patientId, setPatientId] = useState<string | null>(null);
+  const [patientName, setPatientName] = useState<string | null>(null);
+  const [consultationId, setConsultationId] = useState<string | null>(null);
+  const [consultationTitle, setConsultationTitle] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [allPatients, setAllPatients] = useState<PatientListItem[]>([]);
+  const [showNewPatientModal, setShowNewPatientModal] = useState(false);
+  const [newPatientName, setNewPatientName] = useState('');
   const [debugMode, setDebugMode] = useState(false);
+  const [selectorInput, setSelectorInput] = useState('');
+  const [selectorResult, setSelectorResult] = useState('');
 
-  // Estados do Chat e Carregamento
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1, // ID inicial para a mensagem de boas-vindas padrão
-      text: "Olá! Sou o assistente virtual Copilot. Como posso ajudar?",
-      sender: "bot",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    },
-  ]);
+  const [patientConsultations, setPatientConsultations] = useState<ConsultationListItem[]>([]); 
+  const [selectedConsultationIdsToImport, setSelectedConsultationIdsToImport] = useState<string[]>([]);
+  const [showImportHistoryModal, setShowImportHistoryModal] = useState(false);
 
-  // Estados para Pacientes e Consultas
-  const [availablePatients, setAvailablePatients] = useState<PatientListItem[]>([]);
-  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
-  const [newPatientName, setNewPatientName] = useState<string>(''); // Nome para o novo paciente
+  // --- Funções de Carregamento e Persistência ---
 
-  const [availableConsultations, setAvailableConsultations] = useState<ConsultationListItem[]>([]);
-  const [selectedConsultationId, setSelectedConsultationId] = useState<string>('');
-
-  // --- Funções Auxiliares ---
-  const generateId = (): Key => Date.now() + Math.random();
-
-  // --- Funções de Comunicação com Backend ---
-
-  // Verifica a existência de um Patient ID
-  const checkPatientIdExistence = useCallback(async (patientId: string) => {
-    if (!patientId) {
-        console.warn("checkPatientIdExistence: patientId está vazio ou nulo. Iniciando nova sessão.");
-        return false;
-    }
-
-    console.log('[FRONTEND] Verificando existência para patientId:', patientId); // <-- MUITO IMPORTANTE
-    try {
-        const response = await fetch(`${SERVER_URL}/api/patient-exists/${patientId}`);
-        if (!response.ok) {
-            // Se a resposta não for OK (ex: 404, 500), joga um erro
-            const errorText = await response.text();
-            throw new Error(`Erro HTTP ${response.status}: ${errorText}`);
-        }
-        const data = await response.json();
-        console.log('[FRONTEND] Resposta do backend para', patientId, ':', data); // <-- MUITO IMPORTANTE
-
-        if (data.status === 'success' && data.exists) {
-            console.log('[FRONTEND] Paciente encontrado no backend:', patientId);
-            return true;
-        } else {
-            console.log('[FRONTEND] Paciente NÃO encontrado no backend ou status não é sucesso:', patientId);
-            return false;
-        }
-    } catch (error) {
-        console.error('[FRONTEND] Erro ao verificar existência do Patient ID:', error);
-        return false;
-    }
-}, []);
-
-  // Carrega o histórico de uma consulta específica
-  const loadConsultationHistory = useCallback(async (patientId: string, consultationId: string) => {
-    try {
-        const response = await fetch(`http://localhost:3001/api/patients/${patientId}/consultations/${consultationId}/history`);
-        const data = await response.json();
-        if (response.ok && data.history) {
-            const loadedMessages: Message[] = data.history.map((msg: any) => ({
-                id: generateId(),
-                text: msg.parts[0]?.text || "",
-                sender: msg.role,
-                // Correção: toLocaleTimeString ao invés de toLocaletoLocaleTimeString
-                timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }));
-
-            const infoMsg: Message = {
-                id: generateId(),
-                text: `Histórico da consulta ${consultationId.substring(0, 8)}... carregado.`,
-                sender: "bot",
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages([infoMsg, ...loadedMessages]); // Substitui mensagens atuais
-
-        } else {
-            console.error(`Erro ao carregar histórico da consulta: ${data.message || 'Resposta inesperada'}`);
-            const errorMsg: Message = { id: generateId(), text: "Não foi possível carregar o histórico da consulta.", sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-            setMessages(prev => [...prev, errorMsg]);
-        }
-    } catch (error) {
-        console.error('Erro de rede ao carregar histórico da consulta:', error);
-        const networkErrorText = error instanceof Error ? error.message : "Verifique a conexão e o backend.";
-        const errorMsg: Message = { id: generateId(), text: `Erro de conexão ao carregar histórico da consulta: ${networkErrorText}`, sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        setMessages(prev => [...prev, errorMsg]);
-    }
-  }, []);
-
-  // Carrega a lista de consultas para um paciente específico
-  const fetchPatientConsultations = useCallback(async (patientId: string) => {
-    try {
-        const response = await fetch(`http://localhost:3001/api/patients/${patientId}/consultations`);
-        const data = await response.json();
-        if (response.ok && data.consultations) {
-            setAvailableConsultations(data.consultations);
-            // Se houver consultas e nenhuma estiver selecionada, selecione a primeira
-            if (data.consultations.length > 0) {
-                // Prioriza a consulta atual se ela existir na lista, senão seleciona a primeira
-                const defaultConsultation = data.consultations.find((c: ConsultationListItem) => c.id === currentConsultationId) || data.consultations[0];
-                setCurrentConsultationId(defaultConsultation.id);
-                setSelectedConsultationId(defaultConsultation.id);
-                loadConsultationHistory(patientId, defaultConsultation.id);
-            } else {
-                // Se não houver consultas, pode-se automaticamente criar uma aqui ou esperar o usuário
-                setCurrentConsultationId(null);
-                setSelectedConsultationId('');
-                setMessages([
-                    {
-                        id: generateId(),
-                        text: "Nenhuma consulta encontrada para este paciente. Crie uma nova para começar.",
-                        sender: "bot",
-                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    }
-                ]);
-            }
-        } else {
-            console.error('Erro ao carregar consultas do paciente:', data.message || 'Resposta inesperada');
-            setAvailableConsultations([]);
-            setCurrentConsultationId(null);
-            setSelectedConsultationId('');
-        }
-    } catch (error) {
-        console.error('Erro de rede ao carregar consultas do paciente:', error);
-        setAvailableConsultations([]);
-        setCurrentConsultationId(null);
-        setSelectedConsultationId('');
-    }
-  }, [currentConsultationId, loadConsultationHistory]);
-
-  // Carrega a lista de todos os pacientes disponíveis
-  const fetchAllPatients = useCallback(async () => {
-    try {
-      const response = await fetch('http://localhost:3001/api/all-patients');
-      const data = await response.json();
-      if (response.ok && data.patients) {
-        setAvailablePatients(data.patients);
-      } else {
-        console.error('Erro ao carregar lista de pacientes:', data.message || 'Resposta inesperada');
+  const loadPatientDataFromStorage = useCallback(() => {
+    chrome.storage.local.get(['patientId', 'patientName', 'consultationId', 'consultationTitle'], (result) => {
+      if (result.patientId) {
+        setPatientId(result.patientId);
+        setPatientName(result.patientName || null);
+        setConsultationId(result.consultationId || null);
+        setConsultationTitle(result.consultationTitle || null);
       }
-    } catch (error) {
-      console.error('Erro de rede ao carregar lista de pacientes:', error);
-    }
-  }, []);
-
-  // --- Efeitos de Montagem e Sincronização ---
-
-  // Carrega dados da sessão (patientId) e a lista de pacientes/consultas ao iniciar a extensão
-  useEffect(() => {
-    chrome.storage.local.get(['copilotMedicoPatientId', 'copilotMedicoConsultationId'], async (result) => {
-      const savedPatientId = result.copilotMedicoPatientId;
-      const savedConsultationId = result.copilotMedicoConsultationId;
-
-      if (savedPatientId) {
-        const idExists = await checkPatientIdExistence(savedPatientId);
-        if (idExists) {
-          setCurrentPatientId(savedPatientId);
-          setSelectedPatientId(savedPatientId);
-          // Tenta carregar as consultas e, se houver uma consulta salva, prioriza-a
-          if (savedConsultationId) {
-            setCurrentConsultationId(savedConsultationId);
-            setSelectedConsultationId(savedConsultationId);
-          }
-          await fetchPatientConsultations(savedPatientId); // Isso também carregará o histórico
-        } else {
-          console.warn("ID de paciente salvo não encontrado no backend. Iniciando nova sessão.");
-          handleNewPatientSession();
-        }
-      }
-      fetchAllPatients(); // Sempre carrega a lista de pacientes disponíveis
     });
-  }, [checkPatientIdExistence, fetchAllPatients, fetchPatientConsultations]);
+  }, []); // Dependências vazias
 
-
-  // --- Funções de Manipulação da UI e Lógica de Negócio ---
-
-  // Reinicia a sessão (limpa paciente, consulta e chat)
-  const handleNewPatientSession = () => {
-    setCurrentPatientId(null);
-    setCurrentConsultationId(null);
-    setSelectedPatientId('');
-    setSelectedConsultationId('');
-    setNewPatientName('');
-    chrome.storage.local.remove(['copilotMedicoPatientId', 'copilotMedicoConsultationId']);
-    setMessages([
-      {
-        id: generateId(),
-        text: "Nova sessão iniciada. Selecione ou crie um paciente para começar.",
-        sender: "bot",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ]);
-    setAvailableConsultations([]); // Limpa consultas na UI
-    fetchAllPatients(); // Recarrega pacientes (caso um novo tenha sido criado e o dropdown precise ser atualizado)
-  };
-
-  // Lida com a seleção de paciente no dropdown
-const handlePatientSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const newPatientId = event.target.value;
-  console.log('Tentando selecionar Patient ID:', newPatientId); // Adicione este log
-  setSelectedPatientId(newPatientId);
-  console.log('selectedPatientId após setState:', newPatientId); // Adicione este log
-
-  if (newPatientId === '') {
-      console.log('Nova sessão de paciente solicitada.'); // Adicione este log
-      handleNewPatientSession();
-  } else {
-      setCurrentPatientId(newPatientId);
-      console.log('Salvando copilotMedicoPatientId no storage local:', newPatientId); // Adicione este log
-      chrome.storage.local.set({ copilotMedicoPatientId: newPatientId });
-      setCurrentConsultationId(null);
-      setSelectedConsultationId('');
-      console.log('Buscando consultas para:', newPatientId); // Adicione este log
-      await fetchPatientConsultations(newPatientId);
-      console.log('fetchPatientConsultations concluído.'); // Adicione este log
-  }
-};
-
-  // Lida com a criação de um novo paciente
-  const handleCreateNewPatient = async () => {
-    if (newPatientName.trim() === '') {
-        alert('Por favor, insira um nome para o novo paciente.');
-        return;
-    }
-
+  const loadConsultationHistory = useCallback(async (pId: string, cId: string) => {
     setIsLoading(true);
     try {
-        const response = await fetch('http://localhost:3001/api/patients', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: newPatientName.trim() })
-        });
-        const data = await response.json();
-
-        if (response.ok && data.patient_id) {
-            const newId = data.patient_id;
-            const newName = data.patient_name || newPatientName.trim();
-            const firstConsultationId = data.first_consultation_id;
-
-            setCurrentPatientId(newId);
-            setSelectedPatientId(newId);
-            setCurrentConsultationId(firstConsultationId);
-            setSelectedConsultationId(firstConsultationId);
-
-            chrome.storage.local.set({ 
-                copilotMedicoPatientId: newId,
-                copilotMedicoConsultationId: firstConsultationId
-            });
-
-            setMessages([
-              {
-                id: generateId(),
-                text: `Bem-vindo(a), ${newName}! Uma nova sessão de consulta foi iniciada para você. Como posso ajudar?`,
-                sender: "bot",
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              }
-            ]);
-            setNewPatientName('');
-            fetchAllPatients(); // Recarrega a lista para incluir o novo paciente
-            fetchPatientConsultations(newId); // Carrega a primeira consulta
-        } else {
-            console.error('Erro ao criar novo paciente:', data.message || 'Resposta inesperada.');
-            alert(`Erro ao criar novo paciente: ${data.message || 'Verifique o servidor.'}`);
-        }
-    } catch (error) {
-        console.error('Erro de rede ao criar novo paciente:', error);
-        alert('Erro de conexão ao criar novo paciente. Verifique se o backend está rodando.');
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
-  // Lida com a seleção de consulta no dropdown
-  const handleConsultationSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newConsultationId = event.target.value;
-    setSelectedConsultationId(newConsultationId);
-
-    if (newConsultationId === '' || !currentPatientId) {
-        setMessages([
-          {
-            id: generateId(),
-            text: "Selecione uma consulta ou crie uma nova.",
-            sender: "bot",
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setCurrentConsultationId(null);
-        chrome.storage.local.remove('copilotMedicoConsultationId');
-    } else {
-        setCurrentConsultationId(newConsultationId);
-        chrome.storage.local.set({ copilotMedicoConsultationId: newConsultationId });
-        await loadConsultationHistory(currentPatientId, newConsultationId);
-    }
-  };
-
-  // Lida com a criação de uma nova consulta
-  const handleCreateNewConsultation = async () => {
-    if (!currentPatientId) {
-        alert("Por favor, selecione ou crie um paciente antes de criar uma nova consulta.");
-        return;
-    }
-
-    setIsLoading(true);
-    try {
-        const response = await fetch(`http://localhost:3001/api/patients/${currentPatientId}/consultations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: `Nova Consulta em ${new Date().toLocaleDateString()}` }) // Título padrão
-        });
-        const data = await response.json();
-
-        if (response.ok && data.consultation_id) {
-            const newConsultationId = data.consultation_id;
-            setCurrentConsultationId(newConsultationId);
-            setSelectedConsultationId(newConsultationId);
-            chrome.storage.local.set({ copilotMedicoConsultationId: newConsultationId });
-
-            setMessages([
-              {
-                id: generateId(),
-                text: `Nova consulta "${data.consultation_title}" iniciada para o paciente.`,
-                sender: "bot",
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              }
-            ]);
-            // Recarrega a lista de consultas para atualizar o dropdown
-            await fetchPatientConsultations(currentPatientId);
-        } else {
-            console.error('Erro ao criar nova consulta:', data.message || 'Resposta inesperada.');
-            alert(`Erro ao criar nova consulta: ${data.message || 'Verifique o servidor.'}`);
-        }
-    } catch (error) {
-        console.error('Erro de rede ao criar nova consulta:', error);
-        alert('Erro de conexão ao criar nova consulta. Verifique se o backend está rodando.');
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
-
-  // --- Funções de Extração de Dados da Página ---
-  const [editableNotes] = useState(
-    {
-      selector: '.note-editable[role="textbox"]',
-      roleAndIndex: [
-        { role: 'Anamnese', index: 0 },
-        { role: 'Detalhes exame físico', index: 1 },
-        { role: 'Conclusão diagnóstica', index: 2 },
-        { role: 'lista de problemas', index: 3 }
-      ]
-    }
-  );
-
-  const createInputs = async () => {
-    const inputKeys = ["peso", "altura", "imc", "tempe", "freqres", "freqcar", "pas", "pad"]
-    let inputs = []
-    for (let inputKey of inputKeys) {
-      inputs.push({ input: `input[f_prontuario="${inputKey}"]`, role: inputKey });
-    }
-    return inputs
-  }
-
-  const extractDinamicData = async () => {
-    let extractedData = [];
-    let inputs = await createInputs();
-    for (let i = 0; i < inputs.length; i++) {
-      const { input, role } = inputs[i];
-      const result = await extractSingleDiv(input, 0); // Presume que inputs dinâmicos têm index 0
-      if (result) {
-        extractedData.push({ role, text: result });
-      }
-    }
-    return extractedData;
-  }
-
-  const extractEditableNotesData = async () => {
-    let extractedData = [];
-    for (let i = 0; i < editableNotes.roleAndIndex.length; i++) {
-      const { role, index } = editableNotes.roleAndIndex[i];
-      const result = await extractSingleDiv(editableNotes.selector, index);
-      if (result) {
-        extractedData.push({ role, text: result });
-      }
-    }
-    return extractedData;
-  }
-
-  const extractSingleDivDebug = async (selector: string, index: number) => { // Tipagem corrigida
-    try {
-      const result = await executeScriptOnActiveTab(selector, index);
-      if (result) {
-        setExtractedText(result);
-        console.log('Texto extraído (Debug):', result);
-      } else {
-        console.log('Não foi possível extrair o texto (Debug)');
-        setExtractedText(null); // Limpa se não extraiu nada
-      }
-    } catch (error) {
-      console.error('Erro ao executar o script (Debug):', error);
-      setExtractedText(`Erro: ${error instanceof Error ? error.message : String(error)}`); // Exibe erro
-    }
-  };
-
-  // CORREÇÃO AQUI: Tipagem para selector e index, e retorno consistente
-  const extractSingleDiv = async (selector: string, index: number): Promise<string | null> => {
-    try {
-      const result = await executeScriptOnActiveTab(selector, index);
-      return result || null;
-    } catch (error) {
-      console.error('Erro em extractSingleDiv:', error);
-      return null;
-    }
-  };
-
-  const sendExtractedDataToServer = async (extractedData: any) => {
-    if (!currentPatientId || !currentConsultationId) {
-        alert("Por favor, selecione um paciente e uma consulta antes de extrair dados.");
-        return null;
-    }
-    try {
-      const payload = {
-        extracted_content: extractedData,
-        patient_id: currentPatientId,
-        consultation_id: currentConsultationId // Inclui o ID da consulta
-      };
-
-      const response = await fetch('http://localhost:3001/api/extracted-data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (response.ok) {
-        console.log('Dados extraídos enviados com sucesso para /api/extracted-data');
-        const dados = await response.json();
-        return dados;
-      } else {
-        console.log(`Erro ${response.status} ao enviar dados extraídos para /api/extracted-data`);
-        return null;
-      }
-    } catch (error) {
-      console.error('Erro de rede ao enviar dados extraídos:', error);
-      return null;
-    }
-  }
-
-  const handleExtractData = async () => {
-    console.log("Botão 'Extrair Dados da Página' clicado.");
-    if (!currentPatientId || !currentConsultationId) {
-        alert("Por favor, selecione um paciente e uma consulta para extrair dados.");
-        return;
-    }
-    setIsLoading(true);
-    try {
-      const [staticData, dinamicData] = await Promise.all([
-        extractEditableNotesData(),
-        extractDinamicData()
-      ]);
-      const combinedData = [...staticData, ...dinamicData];
-      console.log("Dados combinados para enviar:", combinedData);
-
-      if (combinedData.length > 0) {
-        const dados = await sendExtractedDataToServer(combinedData);
-        console.log('Resposta do servidor para dados extraídos:', dados);
-
-        if (dados && dados.ai_response) {
-            const botResponse: Message = {
-                id: generateId(),
-                text: dados.ai_response,
-                sender: "bot",
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages(prevMessages => [...prevMessages, botResponse]);
-        } else if (dados) {
-            console.warn("Servidor respondeu para /extracted-data, mas sem ai_response.");
-            const infoMsg: Message = { id: generateId(), text: "Dados da página enviados, mas não houve resposta da IA para exibir.", sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-            setMessages(prev => [...prev, infoMsg]);
-        } else {
-            const errorMsg: Message = { id: generateId(), text: "Falha ao enviar ou processar os dados extraídos da página.", sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-            setMessages(prev => [...prev, errorMsg]);
-        }
-      } else {
-          console.log("Nenhum dado extraído da página para enviar.");
-          const infoMsg: Message = { id: generateId(), text: "Não encontrei dados para extrair nesta página.", sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-          setMessages(prev => [...prev, infoMsg]);
-      }
-    } catch (error) {
-      console.error('Erro no processo de extração de dados:', error);
-      const errorMsg: Message = { id: generateId(), text: "Ocorreu um erro durante a extração de dados.", sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-      setMessages(prev => [...prev, errorMsg]);
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
-  const handleDebugMode = () => {
-    setDebugMode(!debugMode);
-  }
-
-  // --- Funções de Envio de Mensagens e Upload de PDF ---
-
-  const handleSendMessage = useCallback(async (userMessageText: string) => {
-    if (!userMessageText.trim() || isLoading) return;
-    // O chat só funciona se houver um paciente E uma consulta selecionada
-    if (!currentPatientId || !currentConsultationId) {
-      alert("Por favor, selecione um paciente e uma consulta para iniciar a conversa.");
-      return;
-    }
-
-    const userUIMessage: Message = {
-      id: generateId(),
-      text: userMessageText,
-      sender: "user" as const,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages(prevMessages => [...prevMessages, userUIMessage]);
-
-    setIsLoading(true);
-    try {
-      const payload: { message: string; patient_id: string; consultation_id: string } = {
-        message: userMessageText,
-        patient_id: currentPatientId,
-        consultation_id: currentConsultationId
-      };
-
-      const response = await fetch('http://localhost:3001/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
+      const response = await fetch(`${SERVER_URL}/api/patients/${pId}/consultations/${cId}/history`);
       const data = await response.json();
-
-      if (response.ok) {
-        if (data.ai_response) {
-          const botMessage: Message = {
-            id: generateId(),
-            text: data.ai_response,
-            sender: "bot",
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-          setMessages(prevMessages => [...prevMessages, botMessage]);
-        } else if (!data.ai_response && data.message) {
-          const infoMsg: Message = { id: generateId(), text: data.message, sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-          setMessages(prevMessages => [...prevMessages, infoMsg]);
-        } else {
-          console.error("Resposta do /api/chat OK, mas sem ai_response ou message:", data);
-          const errMsg: Message = { id: generateId(), text: "Recebi uma resposta inesperada do servidor.", sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-          setMessages(prevMessages => [...prevMessages, errMsg]);
-        }
+      if (data.status === 'success') {
+        const loadedMessages: Message[] = data.history.map((msg: any, index: number) => ({
+          id: `${msg.timestamp}-${index}-${Math.random()}`, // IDs mais robustos para garantir unicidade
+          text: msg.parts && msg.parts.length > 0 ? msg.parts[0].text : '', 
+          sender: msg.role === 'user' ? 'user' : 'bot', // Garante 'user' ou 'bot'
+          timestamp: msg.timestamp
+        }));
+        setMessages(loadedMessages);
       } else {
-        const errorText = data.message || `Desculpe, ocorreu um erro no servidor (${response.status}).`;
-        console.error(`Erro do backend (${response.status}) ao processar /api/chat:`, errorText);
-        const errMsg: Message = { id: generateId(), text: errorText, sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        setMessages(prevMessages => [...prevMessages, errMsg]);
+        console.error("Erro ao carregar histórico da consulta:", data.message);
+        setMessages([{ id: Date.now(), text: `Erro ao carregar histórico: ${data.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
       }
-    } catch (error) {
-      console.error('Erro de rede ao enviar mensagem para /api/chat:', error);
-      const networkErrorText = error instanceof Error ? error.message : "Verifique a conexão e o backend.";
-      const errMsg: Message = { id: generateId(), text: `Erro de conexão: ${networkErrorText}`, sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-      setMessages(prevMessages => [...prevMessages, errMsg]);
+    } catch (error: any) {
+      console.error("Erro de rede ao carregar histórico:", error);
+      setMessages([{ id: Date.now(), text: `Erro de rede ao carregar histórico: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, currentPatientId, currentConsultationId]);
+  }, []); // Dependências vazias, `setMessages` e `setIsLoading` são estáveis
 
-
-  const handleUploadPdf = async (file: File) => {
-    if (!file) return;
-    if (!currentPatientId || !currentConsultationId) {
-        alert("Por favor, selecione um paciente e uma consulta antes de fazer upload de um PDF.");
-        return;
+  const fetchAllPatients = useCallback(async () => {
+    try {
+      const response = await fetch(`${SERVER_URL}/api/all-patients`);
+      const data = await response.json();
+      if (data.status === 'success') {
+        setAllPatients(data.patients);
+      } else {
+        console.error("Erro ao buscar todos os pacientes:", data.message);
+      }
+    } catch (error) {
+      console.error("Erro de rede ao buscar todos os pacientes:", error);
     }
+  }, []); // Dependências vazias, `setAllPatients` é estável
 
+  const fetchPatientConsultations = useCallback(async (pId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${SERVER_URL}/api/patients/${pId}/consultations`);
+      const data = await response.json();
+      if (data.status === 'success') {
+        const sortedConsultations = data.consultations.sort((a: ConsultationListItem, b: ConsultationListItem) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setPatientConsultations(sortedConsultations);
+      } else {
+        console.error("Erro ao carregar consultas:", data.message);
+    
+        setPatientConsultations([{ id: Date.now().toString(), title: `Erro ao carregar consultas: ${data.message}`, created_at: new Date().toISOString() }]);
+      }
+    } catch (error: any) {
+      console.error("Erro na requisição de consultas:", error);
+      setPatientConsultations([{ id: Date.now().toString(), title: `Erro de rede ao carregar consultas: ${error.message}`, created_at: new Date().toISOString() }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []); // Dependências vazias, `setPatientConsultations` e `setIsLoading` são estáveis
+
+  // Carrega dados do paciente e todas as listas de pacientes na inicialização
+  useEffect(() => {
+    loadPatientDataFromStorage();
+    fetchAllPatients();
+  }, [loadPatientDataFromStorage, fetchAllPatients])
+
+  // Carrega o histórico da consulta quando patientId ou consultationId mudam
+
+  useEffect(() => {
+    if (patientId && consultationId) {
+      loadConsultationHistory(patientId, consultationId);
+    } else {
+      // Limpa as mensagens ou exibe a mensagem de boas-vindas
+      setMessages([{ id: Date.now(), text: "Bem-vindo! Selecione ou crie um paciente para começar.", sender: 'bot', timestamp: new Date().toISOString() }]);
+    }
+  }, [patientId, consultationId]); 
+
+  // Carrega as consultas do paciente quando o patientId muda
+  useEffect(() => {
+    if (patientId) {
+      fetchPatientConsultations(patientId);
+    } else {
+      setPatientConsultations([]);
+    }
+  }, [patientId]);
+
+
+  // --- Handlers de Ação ---
+
+  const handleSendMessage = useCallback(async (messageText: string) => {
+    if (!messageText.trim() || !patientId || !consultationId) return;
+
+    const userMessage: Message = {
+      id: Date.now(),
+      text: messageText,
+      sender: 'user',
+      timestamp: new Date().toISOString()
+    };
+    setMessages((prevMessages) => [...prevMessages, userMessage]); // Adiciona mensagem do usuário imediatamente
     setIsLoading(true);
 
-    const processingUserMessage: Message = {
-      id: generateId(),
-      text: `Enviando e processando o arquivo: ${file.name}...`,
-      sender: "user",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages(prevMessages => [...prevMessages, processingUserMessage]);
+    try {
+      const response = await fetch(`${SERVER_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: messageText, 
+          patient_id: patientId, 
+          consultation_id: consultationId,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.status === 'success') {
+        // Após o envio bem-sucedido, recarrega o histórico completo para sincronizar com o backend
+        if (patientId && consultationId) {
+          await loadConsultationHistory(patientId, consultationId); 
+        }
+
+        // Atualiza patientId/consultationId se o backend retornar novos (caso de primeira conversa)
+        if (data.patient_id && data.patient_id !== patientId) {
+          setPatientId(data.patient_id);
+          chrome.storage.local.set({ patientId: data.patient_id });
+        }
+        if (data.consultation_id && data.consultation_id !== consultationId) {
+          setConsultationId(data.consultation_id);
+          chrome.storage.local.set({ consultationId: data.consultation_id });
+        }
+      } else {
+        setMessages((prevMessages) => [...prevMessages, { id: Date.now(), text: `Erro: ${data.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+      }
+    } catch (error: any) {
+      console.error("Erro de rede:", error);
+      setMessages((prevMessages) => [...prevMessages, { id: Date.now(), text: `Erro de conexão: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [patientId, consultationId, loadConsultationHistory]);
+
+  const handleUploadPdf = useCallback(async (file: File) => {
+    if (!file || !patientId || !consultationId) return;
 
     const formData = new FormData();
     formData.append('pdf', file);
-    formData.append('patient_id', currentPatientId);
-    formData.append('consultation_id', currentConsultationId); // Inclui o ID da consulta
+    formData.append('patient_id', patientId);
+    formData.append('consultation_id', consultationId);
+
+    setIsLoading(true);
+    setMessages(prev => [...prev, { id: Date.now(), text: `Analisando PDF "${file.name}"...`, sender: 'bot', timestamp: new Date().toISOString() }]);
 
     try {
-      const response = await fetch('http://localhost:3001/api/upload-pdf', {
+      const response = await fetch(`${SERVER_URL}/api/upload-pdf`, {
         method: 'POST',
-        body: formData
+        body: formData,
       });
 
-      setIsLoading(false);
       const data = await response.json();
+      if (data.status === 'success') {
+         // Após o upload bem-sucedido, recarrega o histórico completo para sincronizar com o backend
+        if (patientId && consultationId) {
+          await loadConsultationHistory(patientId, consultationId); 
+        }
 
-      if (response.ok) {
-        // A lógica de setar patient_id e consultation_id no client agora é controlada pelos dropdowns/criação
-        if (data.ai_response) {
-          const botMessage: Message = {
-            id: generateId(),
-            text: data.ai_response,
-            sender: "bot",
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-          setMessages(prevMessages => [...prevMessages, botMessage]);
-        } else if (!data.ai_response && data.message) {
-            const infoMsg: Message = { id: generateId(), text: data.message, sender: 'bot', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-            setMessages(prevMessages => [...prevMessages, infoMsg]);
+        if (data.patient_id && data.patient_id !== patientId) {
+          setPatientId(data.patient_id);
+          chrome.storage.local.set({ patientId: data.patient_id });
+        }
+        if (data.consultation_id && data.consultation_id !== consultationId) {
+          setConsultationId(data.consultation_id);
+          chrome.storage.local.set({ consultationId: data.consultation_id });
         }
       } else {
-        const errorText = data.message || `Erro ao processar PDF (${response.status}).`;
-        const errorMessage: Message = {
-          id: generateId(),
-          text: errorText,
-          sender: "bot",
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prevMessages => [...prevMessages, errorMessage]);
+        setMessages((prevMessages) => [...prevMessages, { id: Date.now(), text: `Erro ao processar PDF: ${data.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
       }
-    } catch (error) {
-      console.error('Erro de rede ao enviar PDF:', error);
+    } catch (error: any) {
+      console.error("Erro de rede no upload de PDF:", error);
+      setMessages((prevMessages) => [...prevMessages, { id: Date.now(), text: `Erro de conexão ao enviar PDF: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    } finally {
       setIsLoading(false);
-
-      const networkErrorText = error instanceof Error ? error.message : "Verifique a conexão e o backend.";
-      const errorMessage: Message = {
-        id: generateId(),
-        text: `Falha no upload do PDF: ${networkErrorText}`,
-        sender: "bot",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prevMessages => [...prevMessages, errorMessage]);
     }
-  };
+  }, [patientId, consultationId, loadConsultationHistory]); // Adicionado loadConsultationHistory como dependência
 
-  // --- Renderização da UI ---
+  const handleCreateNewPatient = useCallback(async () => {
+    if (!newPatientName.trim()) {
+      alert("Por favor, insira um nome para o paciente.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${SERVER_URL}/api/patients`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newPatientName }),
+      });
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        const newPId = data.patient_id;
+        const newPName = data.patient_name;
+        const newCId = data.first_consultation_id; 
+
+        chrome.storage.local.set({ patientId: newPId, patientName: newPName, consultationId: newCId, consultationTitle: "Primeira Consulta" }, () => {
+          console.log("Setting patientId to:", newPId, "and consultationId to:", newCId);
+          setPatientId(newPId);
+          setPatientName(newPName);
+          setConsultationId(newCId);
+          setConsultationTitle("Primeira Consulta");
+          loadConsultationHistory(newPId, newCId);
+          fetchAllPatients();     // O fetchAllPatients() é importante para atualizar a lista na sidebar
+        });
+        setShowNewPatientModal(false);
+        setNewPatientName('');
+      } else {
+        alert(`Erro ao criar paciente: ${data.message}`);
+      }
+    } catch (error: any) {
+      console.error("Erro ao criar paciente:", error);
+      alert(`Erro de rede ao criar paciente: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [newPatientName, fetchAllPatients, loadConsultationHistory]);
+
+  const handleSelectPatient = useCallback(async (pId: string, pName: string) => {
+    setIsLoading(true);
+    try {
+      const consultationsResponse = await fetch(`${SERVER_URL}/api/patients/${pId}/consultations`);
+      const consultationsData = await consultationsResponse.json();
+
+      let selectedConsultationToLoad: string | null = null;
+      let selectedConsultationTitleToLoad: string | null = null;
+
+      if (consultationsData.status === 'success' && consultationsData.consultations.length > 0) {
+        const sortedConsults = consultationsData.consultations.sort((a: ConsultationListItem, b: ConsultationListItem) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        selectedConsultationToLoad = sortedConsults[0].id;
+        selectedConsultationTitleToLoad = sortedConsults[0].title;
+      } else {
+        const createConsultationResponse = await fetch(`${SERVER_URL}/api/patients/${pId}/consultations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: `Consulta Padrão - ${new Date().toLocaleDateString('pt-BR')}` }),
+        });
+        const createConsultationData = await createConsultationResponse.json();
+        if (createConsultationData.status === 'success') {
+          selectedConsultationToLoad = createConsultationData.consultation_id;
+          selectedConsultationTitleToLoad = createConsultationData.consultation_title;
+        } else {
+          throw new Error(`Falha ao criar consulta para paciente selecionado: ${createConsultationData.message}`);
+        }
+      }
+
+      if (selectedConsultationToLoad) {
+        chrome.storage.local.set({ patientId: pId, patientName: pName, consultationId: selectedConsultationToLoad, consultationTitle: selectedConsultationTitleToLoad }, () => {
+          setPatientId(pId);
+          setPatientName(pName);
+          setConsultationId(selectedConsultationToLoad);
+          setConsultationTitle(selectedConsultationTitleToLoad);
+          loadConsultationHistory(pId, selectedConsultationToLoad);
+          setMessages(prev => [...prev, { id: Date.now(), text: `Paciente "${pName}" (${pId.substring(0, 8)}...) selecionado. Consulta "${selectedConsultationTitleToLoad}" carregada.`, sender: 'bot', timestamp: new Date().toISOString() }]);
+        });
+      }
+
+    } catch (error: any) {
+      console.error("Erro ao selecionar paciente:", error);
+      setMessages(prev => [...prev, { id: Date.now(), text: `Erro ao selecionar paciente: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    } finally {
+      setIsLoading(false);
+      setIsSidebarOpen(false); // Fecha o sidebar após seleção
+    }
+  }, [loadConsultationHistory]);
+
+
+  const handleSelectConsultation = useCallback(async (cId: string, cTitle: string) => {
+    if (!patientId) {
+      setMessages(prev => [...prev, { id: Date.now(), text: "Nenhum paciente selecionado. Por favor, selecione um paciente primeiro.", sender: 'bot', timestamp: new Date().toISOString() }]);
+      return;
+    }
+    setIsLoading(true);
+    chrome.storage.local.set({ consultationId: cId, consultationTitle: cTitle }, () => {
+      setConsultationId(cId);
+      setConsultationTitle(cTitle);
+      loadConsultationHistory(patientId, cId);
+      setMessages(prev => [...prev, { id: Date.now(), text: `Consulta "${cTitle}" (${cId.substring(0, 8)}...) carregada.`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    });
+    setIsSidebarOpen(false); // Fecha o sidebar após seleção
+  }, [patientId, loadConsultationHistory]);
+
+
+  const handleCreateNewConsultation = useCallback(async () => {
+    if (!patientId) {
+      setMessages(prev => [...prev, { id: Date.now(), text: "Por favor, selecione ou crie um paciente primeiro.", sender: 'bot', timestamp: new Date().toISOString() }]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const newConsultationTitle = `Consulta em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`;
+      const response = await fetch(`${SERVER_URL}/api/patients/${patientId}/consultations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newConsultationTitle,
+          import_consultation_ids: selectedConsultationIdsToImport 
+        }),
+      });
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        const newConsultId = data.consultation_id;
+        const newConsultTitle = data.consultation_title;
+
+        chrome.storage.local.set({ consultationId: newConsultId, consultationTitle: newConsultTitle, patientId: patientId }, () => {
+          setConsultationId(newConsultId);
+          setConsultationTitle(newConsultTitle);
+          loadConsultationHistory(patientId, newConsultId); 
+          setMessages(prev => [...prev, { id: Date.now(), text: `Nova consulta "${newConsultTitle}" criada e selecionada.`, sender: 'bot', timestamp: new Date().toISOString() }]);
+          
+          setSelectedConsultationIdsToImport([]);
+          fetchPatientConsultations(patientId); // Atualiza a lista de consultas na sidebar
+        });
+      } else {
+        setMessages(prev => [...prev, { id: Date.now(), text: `Erro ao criar nova consulta: ${data.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+      }
+    } catch (error: any) {
+      console.error("Erro ao criar nova consulta:", error);
+      setMessages(prev => [...prev, { id: Date.now(), text: `Erro de rede ao criar nova consulta: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    } finally {
+      setIsLoading(false);
+      setShowImportHistoryModal(false); // Fecha o modal após a criação
+    }
+  }, [patientId, selectedConsultationIdsToImport, loadConsultationHistory, fetchPatientConsultations]); 
+
+  const handleSendExtractedDataToServer = useCallback(async (extractedData: Record<string, string | string[]>) => {
+    if (!patientId || !consultationId) {
+      setMessages(prev => [...prev, { id: Date.now(), text: "Por favor, selecione ou crie um paciente e uma consulta primeiro.", sender: 'bot', timestamp: new Date().toISOString() }]);
+      return;
+    }
+
+    setIsLoading(true);
+    setMessages(prev => [...prev, { id: Date.now(), text: "Enviando dados extraídos para análise...", sender: 'bot', timestamp: new Date().toISOString() }]);
+
+    try {
+      const response = await fetch(`${SERVER_URL}/api/extracted-data`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: patientId,
+          consultation_id: consultationId,
+          extracted_data: extractedData
+        }),
+      });
+
+      const data = await response.json();
+      if (data.status === 'success') {
+         // Após o envio bem-sucedido, recarrega o histórico completo para sincronizar com o backend
+        if (patientId && consultationId) {
+          await loadConsultationHistory(patientId, consultationId); 
+        }
+      } else {
+        setMessages((prevMessages) => [...prevMessages, { id: Date.now(), text: `Erro ao enviar dados extraídos: ${data.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+      }
+    } catch (error: any) {
+      console.error("Erro de rede ao enviar dados extraídos:", error);
+      setMessages((prevMessages) => [...prevMessages, { id: Date.now(), text: `Erro de conexão ao enviar dados extraídos: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [patientId, consultationId, loadConsultationHistory]);
+
+
+  const handleExtractAndSend = useCallback(async () => {
+    if (!patientId || !consultationId) {
+      setMessages(prev => [...prev, { id: Date.now(), text: "Por favor, selecione um paciente e uma consulta primeiro para extrair dados.", sender: 'bot', timestamp: new Date().toISOString() }]);
+      return;
+    }
+
+    setMessages(prev => [...prev, { id: Date.now(), text: "Extraindo dados da página...", sender: 'bot', timestamp: new Date().toISOString() }]);
+    setIsLoading(true);
+
+    try {
+        const editableNotesSelector = '.editable-notes'; 
+        const createInputsSelector = '.create-input';
+
+        const extractedContent = await executeArbitraryScriptOnActiveTab(
+            (notesSel: string, inputsSel: string) => {
+                const extractText = (selector: string) => { 
+                    const element = document.querySelector(selector);
+                    return element ? element.textContent?.trim() || '' : '';
+                };
+
+                const extractInputs = (selector: string) => {
+                    const elements = Array.from(document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(selector));
+                    return elements.map(el => `${el.name || el.id || el.placeholder || 'Campo'}: ${el.value || ''}`);
+                };
+
+                const editableNotes = extractText(notesSel); 
+                const createInputs = extractInputs(inputsSel); 
+
+                return { editableNotes, createInputs };
+            }, 
+            editableNotesSelector, 
+            createInputsSelector 
+        );
+
+      if (extractedContent) {
+        await handleSendExtractedDataToServer(extractedContent);
+      } else {
+        setMessages(prev => [...prev, { id: Date.now(), text: "Nenhum conteúdo relevante extraído da página.", sender: 'bot', timestamp: new Date().toISOString() }]);
+      }
+    } catch (error: any) {
+      console.error("Erro ao extrair dados da página:", error);
+      setMessages(prev => [...prev, { id: Date.now(), text: `Erro ao extrair dados: ${error.message}`, sender: 'bot', timestamp: new Date().toISOString() }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [patientId, consultationId, handleSendExtractedDataToServer]);
+
+
+  const handleDebugSelector = useCallback(async () => {
+    if (!selectorInput.trim()) {
+      setSelectorResult("Por favor, insira um seletor CSS.");
+      return;
+    }
+
+    try {
+      const result = await executeScriptOnActiveTab(selectorInput, 0); 
+      setSelectorResult(result || "Nenhum elemento encontrado com este seletor.");
+    } catch (error: any) {
+      setSelectorResult(`Erro ao executar seletor: ${error.message}`);
+    }
+  }, [selectorInput]);
+
+
+  // --- Renderização ---
+
   return (
-    <>
-      <div className="top-bar">
-        {/* Input e Botão para Criar Novo Paciente */}
-        <input
-          type="text"
-          placeholder="Nome do Novo Paciente"
-          value={newPatientName}
-          onChange={(e) => setNewPatientName(e.target.value)}
-          className="new-patient-input"
-          disabled={isLoading}
-        />
-        <button
-          onClick={handleCreateNewPatient}
-          disabled={isLoading || newPatientName.trim() === ''}
-          className="create-patient-button"
-        >
-          Criar Novo Paciente
-        </button>
-      </div>
+    <div className="App">
+      <header className="App-header">
+        <h1>Assistente Médico AI</h1>
+      </header>
 
-      <div className="selection-bar">
-        {/* Dropdown de Seleção de Paciente */}
-        <label htmlFor="patient-select">Paciente:</label>
-        <select
-          id="patient-select"
-          className="patient-select"
-          value={selectedPatientId}
-          onChange={handlePatientSelectChange}
-          disabled={isLoading}
-        >
-          <option value="">-- Selecionar Paciente --</option>
-          {availablePatients.map((patient) => (
-            <option key={patient.id} value={patient.id}>
-              {patient.name}
-            </option>
-          ))}
-        </select>
-
-        {/* Dropdown de Seleção de Consulta */}
-        <label htmlFor="consultation-select">Consulta:</label>
-        <select
-          id="consultation-select"
-          className="consultation-select"
-          value={selectedConsultationId}
-          onChange={handleConsultationSelectChange}
-          // Desabilita se não houver paciente selecionado ou consultas disponíveis
-          disabled={isLoading || !currentPatientId || availableConsultations.length === 0}
-        >
-          <option value="">-- Selecionar Consulta --</option>
-          {availableConsultations.map((consultation) => (
-            <option key={consultation.id} value={consultation.id}>
-              {consultation.title} ({new Date(consultation.date).toLocaleDateString()})
-            </option>
-          ))}
-        </select>
+      {/* Sidebar */}
+      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <h2>Pacientes</h2>
+        <div className="patient-controls">
+          <button onClick={() => setShowNewPatientModal(true)} disabled={isLoading}>
+            + Novo Paciente
+          </button>
+        </div>
         
-        {/* Botão para criar nova consulta */}
-        {currentPatientId && (
-            <button
-                className="create-consultation-button"
-                onClick={handleCreateNewConsultation}
-                disabled={isLoading}
+        {/* DROPDOWN DE PACIENTES */}
+        <select
+          className="patient-select"
+          value={patientId || ''} // Define o valor selecionado
+          onChange={(e) => {
+            const selectedPatient = allPatients.find(p => p.id === e.target.value);
+            if (selectedPatient) {
+              handleSelectPatient(selectedPatient.id, selectedPatient.name);
+            } else {
+              // Se nenhuma opção for selecionada (ex: a opção "Selecione um paciente"), limpa o estado
+              setPatientId(null);
+              setPatientName(null);
+              setConsultationId(null);
+              setConsultationTitle(null);
+              setMessages([{ id: Date.now(), text: "Nenhum paciente selecionado.", sender: 'bot', timestamp: new Date().toISOString() }]);
+            }
+          }}
+          disabled={isLoading}
+          style={{ width: '100%', padding: '8px', marginBottom: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+        >
+          <option value="">Selecione um Paciente</option>
+          {allPatients.map((patient) => (
+            <option key={patient.id} value={patient.id}>
+              {patient.name} ({patient.id.substring(0, 8)}...)
+            </option>
+          ))}
+        </select>
+
+        {patientId && (
+          <>
+            <h2>Consultas de {patientName || patientId.substring(0, 8)}...</h2>
+            <div className="consultation-controls">
+                <button 
+                    onClick={() => setShowImportHistoryModal(true)} 
+                    disabled={isLoading}
+                    style={{ marginRight: '5px' }}
+                >
+                    + Nova Consulta (Importar)
+                </button>
+                <button 
+                    onClick={() => {
+                        setSelectedConsultationIdsToImport([]);
+                        handleCreateNewConsultation(); 
+                    }} 
+                    disabled={isLoading}
+                >
+                    + Nova Consulta (Vazia)
+                </button>
+            </div>
+            
+            {/* DROPDOWN DE CONSULTAS */}
+            <select
+              className="consultation-select"
+              value={consultationId || ''} // Define o valor selecionado
+              onChange={(e) => {
+                const selectedConsultation = patientConsultations.find(c => c.id === e.target.value);
+                if (selectedConsultation) {
+                  handleSelectConsultation(selectedConsultation.id, selectedConsultation.title);
+                } else {
+                  // Se nenhuma opção for selecionada, limpa o estado da consulta
+                  setConsultationId(null);
+                  setConsultationTitle(null);
+                  setMessages([{ id: Date.now(), text: "Nenhuma consulta selecionada para o paciente atual.", sender: 'bot', timestamp: new Date().toISOString() }]);
+                }
+              }}
+              disabled={isLoading || patientConsultations.length === 0}
+              style={{ width: '100%', padding: '8px', marginBottom: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
             >
-                Nova Consulta
-            </button>
+              <option value="">Selecione uma Consulta</option>
+              {patientConsultations.map((consultation) => (
+                <option key={consultation.id} value={consultation.id}>
+                  {consultation.title} ({consultation.id.substring(0, 8)}...)
+                </option>
+              ))}
+            </select>
+          </>
         )}
       </div>
 
-      {/* Componente de Chat */}
-      <Chat
-        messages={messages}
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-        onUploadPdf={handleUploadPdf}
-      />
+      {/* Main Chat Area */}
+      <div className="chat-container">
+        <div className="chat-info">
+          Paciente: **{patientName || "Não Selecionado"}** {patientId ? `(${patientId.substring(0, 8)}...)` : ''}
+          <br />
+          Consulta: **{consultationTitle || "Não Selecionada"}** {consultationId ? `(${consultationId.substring(0, 8)}...)` : ''}
+        </div>
+        
+        {/* O COMPONENTE CHAT AGORA RECEBE AS FUNÇÕES DE ENVIO E UPLOAD */}
+        <Chat
+          messages={messages}
+          isLoading={isLoading}
+          onSendMessage={handleSendMessage} 
+          onUploadPdf={handleUploadPdf} 
+        />
 
-      {/* Seção de Ferramentas e Debug */}
-      <div className="card">
-        <button onClick={handleNewPatientSession}>Limpar Sessão Atual</button>
-        <button onClick={handleDebugMode}>Debug</button>
-        {
-          debugMode && (
-            <div>
-              <div>
-                <label> Seletor CSS: <input type="text" value={debugSelector} onChange={(e) => setDebugSelector(e.target.value)} placeholder="Exemplo: .note-editable[role='textbox']" /> </label>
-              </div>
-              <div>
-                <label> Índice: <input type="number" value={debugIndex} onChange={(e) => setDebugIndex(parseInt(e.target.value, 10))} min={0} /> </label>
-              </div>
-              <div> {extractedText && <p>Texto extraído (Debug): {extractedText}</p>} </div>
-              <button onClick={() => extractSingleDivDebug(debugSelector, debugIndex)}>Extrair texto (Debug)</button>
-            </div>
-          )
-        }
-        <button onClick={handleExtractData} disabled={!currentPatientId || !currentConsultationId || isLoading}> Extrair Dados da Página </button>
+        {/* Debug Mode Toggle */}
+        <div style={{ marginTop: '10px', textAlign: 'center' }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={debugMode}
+              onChange={(e) => setDebugMode(e.target.checked)}
+            />
+            Modo Debug
+          </label>
+        </div>
+
+        {/* Debug Controls */}
+        {debugMode && (
+          <div style={{ borderTop: '1px solid #eee', marginTop: '10px', paddingTop: '10px' }}>
+            <h3>Debug Seletor CSS</h3>
+            <input
+              type="text"
+              placeholder="Ex: .some-class div > span"
+              value={selectorInput}
+              onChange={(e) => setSelectorInput(e.target.value)}
+              style={{ width: 'calc(100% - 70px)', marginRight: '5px' }}
+            />
+            <button onClick={handleDebugSelector}>Testar</button>
+            <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: '150px', overflowY: 'auto', border: '1px solid #ddd', padding: '5px', background: '#f9f9f9', marginTop: '5px' }}>
+              {selectorResult}
+            </pre>
+          </div>
+        )}
+        {/* Botão de Extrair Dados da Página (mantido no App.tsx por ser uma funcionalidade "global") */}
+        <button onClick={handleExtractAndSend} disabled={isLoading || !patientId || !consultationId} style={{ marginTop: '10px', padding: '10px', width: '100%' }}>
+            Extrair Dados da Página
+        </button>
       </div>
-    </>
+
+      {/* Modal para Criar Novo Paciente */}
+      {showNewPatientModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+          justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }}>
+          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '300px' }}>
+            <h3>Criar Novo Paciente</h3>
+            <input
+              type="text"
+              placeholder="Nome do Paciente"
+              value={newPatientName}
+              onChange={(e) => setNewPatientName(e.target.value)}
+              style={{ width: 'calc(100% - 20px)', marginBottom: '10px', padding: '8px' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button onClick={() => setShowNewPatientModal(false)} style={{ padding: '8px 15px', cursor: 'pointer', backgroundColor: '#ccc' }}>
+                Cancelar
+              </button>
+              <button onClick={handleCreateNewPatient} disabled={isLoading} style={{ padding: '8px 15px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white' }}>
+                Criar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para seleção de históricos de consulta para importação */}
+      {showImportHistoryModal && patientId && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+          justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white', padding: '20px', borderRadius: '8px',
+            width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'
+          }}>
+            <h3 style={{ marginTop: '0' }}>Selecionar Históricos para Nova Consulta</h3>
+            <p>Marque os históricos de consultas anteriores que você deseja importar para a nova conversa.</p>
+            
+            {patientConsultations.length === 0 ? (
+              <p>Nenhuma consulta anterior encontrada para este paciente.</p>
+            ) : (
+              <div style={{ marginBottom: '15px' }}>
+                {patientConsultations.map((consultation) => (
+                  // Garante que a consulta atualmente selecionada não apareça para importação
+                  (consultation.id !== consultationId) && ( 
+                    <div key={consultation.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                      <input
+                        type="checkbox"
+                        id={`consultation-${consultation.id}`}
+                        checked={selectedConsultationIdsToImport.includes(consultation.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedConsultationIdsToImport(prev => [...prev, consultation.id]);
+                          } else {
+                            setSelectedConsultationIdsToImport(prev => prev.filter(id => id !== consultation.id));
+                          }
+                        }}
+                        style={{ marginRight: '10px' }}
+                      />
+                      <label htmlFor={`consultation-${consultation.id}`} style={{ flexGrow: 1, cursor: 'pointer' }}>
+                        <strong>{consultation.title}</strong>
+                        <br />
+                        <small>ID: {consultation.id.substring(0, 8)}... - Criada em: {new Date(consultation.created_at).toLocaleDateString('pt-BR')}</small>
+                      </label>
+                    </div>
+                  )
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button 
+                onClick={() => {
+                  setSelectedConsultationIdsToImport([]); 
+                  setShowImportHistoryModal(false); 
+                }}
+                style={{ padding: '8px 15px', cursor: 'pointer', backgroundColor: '#ccc' }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={() => {
+                  handleCreateNewConsultation(); 
+                }}
+                disabled={isLoading} 
+                style={{ padding: '8px 15px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white' }}
+              >
+                Criar Nova Consulta com Histórico(s)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
-
 export default App;

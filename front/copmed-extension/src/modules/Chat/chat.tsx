@@ -4,28 +4,27 @@ import { Send } from 'lucide-react';
 import './chat.css';
 import ReactMarkdown from 'react-markdown'; 
 
-// 1. Atualizar a Interface de Props
 interface ChatProps {
   messages: Array<{
-    id: Key; // Usar Key como tipo genérico para IDs
-    text: ReactNode; // Permitir nós React além de string
+    id: Key; 
+    text: ReactNode; 
     sender: 'user' | 'bot';
     timestamp: string;
   }>;
-  // A prop setMessages foi removida.
-  // setMessages: React.Dispatch<React.SetStateAction<any>>; 
-  onSendMessage: (messageText: string) => void; // Função para notificar App.js
-  isLoading: boolean; // Para mostrar feedback de carregamento/desabilitar input
-  onUploadPdf?: (file: File) => void; // Novo prop opcional
+
+
+  onSendMessage: (messageText: string) => void; 
+  isLoading: boolean; 
+  onUploadPdf?: (file: File) => void;
 }
 
 const Chat: React.FC<ChatProps> = ({ messages, onSendMessage, isLoading, onUploadPdf }) => {
   const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef<null | HTMLDivElement>(null); // Ref para scroll automático
+  const messagesEndRef = useRef<null | HTMLDivElement>(null); 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
-    fileInputRef.current?.click(); // Simula clique no input escondido
+    fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
