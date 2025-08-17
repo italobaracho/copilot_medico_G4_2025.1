@@ -32,7 +32,7 @@
   ```
 
 
-2. Gere uma chave API do gemini no site e coloque-a nas variáveis de ambiente do seu sistema em PATH. Se quiser fazer no código, altere a variável api_key no arquivo gemini_connection dentro da pasta backend.
+2. Gere uma chave API do gemini no site e criar uma nova váriavel de usuário com o nome ( GEMINI_API_KEY) e coloque-a a key no Valor da variável.
    
 #### Frontend
 
