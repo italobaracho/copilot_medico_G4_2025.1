@@ -1,0 +1,927 @@
+{
+  "paciente_abc": {
+    "name": "João Silva",
+    "chat_history": [],
+    "consultations": [
+      {
+        "id": "1f856189-5bc5-434e-ae5d-744568815323",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-04T19:17:38.999027",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:38.998009"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:38.998009"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:38.998009"
+          }
+        ]
+      },
+      {
+        "id": "93af8b67-d30e-454d-acd5-ee8ffda208da",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-04T19:17:39.009026",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:39.000043"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:39.000043"
+          }
+        ]
+      },
+      {
+        "id": "6089099a-1d95-41c2-a685-6f4a4aced129",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-04T19:17:43.649927",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:43.649927"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:43.649927"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:43.649927"
+          }
+        ]
+      },
+      {
+        "id": "a30c3956-2997-4388-bad9-396d9cf05002",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-04T19:17:43.658955",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:43.650924"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:43.650924"
+          }
+        ]
+      },
+      {
+        "id": "9cda0fbc-1913-4d21-b52c-8823ddac633c",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-04T19:39:38.175966",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.175966"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.175966"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.175966"
+          }
+        ]
+      },
+      {
+        "id": "3a741494-6763-47fb-ad12-16e02a7185f6",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-04T19:39:38.187992",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.176966"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.176966"
+          }
+        ]
+      },
+      {
+        "id": "03d20f8d-65b8-458f-9f07-0c3f0cf63e43",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-04T19:39:42.803312",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.802314"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.802314"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.802314"
+          }
+        ]
+      },
+      {
+        "id": "760fba52-1a21-4c62-89ed-07de678f4726",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-04T19:39:42.812313",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.804336"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.804336"
+          }
+        ]
+      },
+      {
+        "id": "bf5e693c-d227-49d7-9a4d-8781e04d45b8",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-05T10:00:36.799720",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:36.799720"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:36.799720"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:36.799720"
+          }
+        ]
+      },
+      {
+        "id": "b98a75af-edc1-417b-a9ce-6bad36ecb206",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-05T10:00:36.809720",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:36.800720"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:36.800720"
+          }
+        ]
+      },
+      {
+        "id": "9ed6fff5-d82f-4150-bc47-09b7a3495d3b",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-05T10:00:43.745607",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:43.745607"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:43.745607"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:43.745607"
+          }
+        ]
+      },
+      {
+        "id": "98b6d342-0439-45c3-8376-e33ab6fb9be1",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-05T10:00:43.779608",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:43.746607"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:00:43.746607"
+          }
+        ]
+      },
+      {
+        "id": "239969df-15a1-4764-9e8b-7f4823d7a2a6",
+        "title": "Consulta em 05/07/2025 10:03:06",
+        "date": "2025-07-05T10:03:06.378828",
+        "chat_history": [
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "Históricos importados de consultas anteriores: 93af8b67..., 3a741494..., 03d20f8d...."
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.376828"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Início do Histórico da Consulta 93af8b67... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.377827"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:39.000043"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:17:39.000043"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Fim do Histórico da Consulta 93af8b67... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.377827"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Início do Histórico da Consulta 3a741494... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.377827"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.176966"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:38.176966"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Fim do Histórico da Consulta 3a741494... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.377827"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Início do Histórico da Consulta 03d20f8d... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.378828"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.802314"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.802314"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-04T19:39:42.802314"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Fim do Histórico da Consulta 03d20f8d... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:03:06.378828"
+          }
+        ]
+      },
+      {
+        "id": "cddb15d2-bf42-4872-8589-79e9e02b3f8f",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-05T10:18:04.873380",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:04.872382"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:04.872382"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:04.872382"
+          }
+        ]
+      },
+      {
+        "id": "2074a39a-2c74-4e74-9632-9049b8ca9e0e",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-05T10:18:04.884895",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:04.875380"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:04.875380"
+          }
+        ]
+      },
+      {
+        "id": "ddb2a5e4-f920-4a46-a308-3fbe4565a01e",
+        "title": "Consulta Antiga 1 (Dor de Cabeça)",
+        "date": "2025-07-05T10:18:13.063380",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Paciente relatou dor de cabeça severa há 2 dias."
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:13.060684"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Qual a intensidade da dor em uma escala de 0 a 10?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:13.060684"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Nível 8, latejante."
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:13.060684"
+          }
+        ]
+      },
+      {
+        "id": "70e59618-f962-40bc-bf55-55f81209a140",
+        "title": "Consulta Antiga 2 (Febre)",
+        "date": "2025-07-05T10:18:13.105961",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre de 39°C e tosse seca persistente."
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:13.069380"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Há quanto tempo os sintomas estão presentes?"
+              }
+            ],
+            "timestamp": "2025-07-05T10:18:13.069380"
+          }
+        ]
+      }
+    ]
+  },
+  "d4ba1c1e-f3d5-44b3-bbda-5abbc7cb5d0d": {
+    "name": "João batista",
+    "chat_history": [],
+    "consultations": [
+      {
+        "id": "847b2fe2-19cd-4d31-9473-9f7b748a06b2",
+        "title": "Primeira Consulta",
+        "date": "2025-07-04T19:18:16.083396",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Olá meu nome é junior, estou com febre alta a 3 dias"
+              }
+            ],
+            "timestamp": "2025-07-05T10:05:25.407506"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Olá, Junior. Sou o Co-Pilot Médico, um assistente de IA para suporte ao diagnóstico médico.  Para auxiliá-lo da melhor forma possível, preciso de mais informações sobre seus sintomas.  Por favor, descreva detalhadamente:\n\n* **A intensidade da febre:**  Qual a temperatura medida (em graus Celsius ou Fahrenheit)?  Utilizou termômetro?\n* **Outros sintomas:** Além da febre, você apresenta outros sintomas como dor de cabeça, dor muscular, tosse, coriza, diarreia, vômitos, dor de garganta, fadiga, etc.? Descreva a intensidade e duração de cada um.\n* **Histórico médico:** Você possui alguma doença crônica? Faz uso de algum medicamento regularmente? Tem alergias?\n* **Histórico vacinal:** Você está em dia com suas vacinas?\n* **Exposição a doenças infecciosas:** Você teve contato com alguma pessoa doente recentemente? Viajou para alguma região com surtos epidemiológicos?\n\nQuanto mais detalhes você fornecer, mais preciso será o meu auxílio.  Lembre-se que minhas informações são apenas consultativas e não substituem uma consulta médica.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:05:27.588072"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "39 graus de febre, dor muscular, tosse, sem vacinas, sem contato com pessoas doentes"
+              }
+            ],
+            "timestamp": "2025-07-05T10:05:58.377819"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "### Patient Data\n\n**Name:** Junior\n**Date of Birth:**  Não informado\n**Age:** Não informado\n**Sex:** Não informado\n\n---\n\n### Chief Complaint\n\nPaciente relata febre alta (39 graus), dor muscular e tosse há 3 dias.\n\n---\n\n### Current Illness History\n\nFebre de 39 graus Celsius há três dias, acompanhada de mialgia e tosse.  Não há relato de outros sintomas como dor de garganta, coriza, diarreia ou vômitos.  Nega contato recente com pessoas doentes.  Histórico vacinal não informado.\n\n---\n\n### Past Medical History\n\nNão informado.\n\n---\n\n### Family History\n\nNão informado.\n\n---\n\n### Diagnostic Hypotheses\n\n* **Hipótese 1: Influenza (Gripe) (75%)**:  A combinação de febre alta, mialgia e tosse é sugestiva de infecção viral, sendo a influenza uma das causas mais prevalentes.\n* **Hipótese 2: Infecção Viral Respiratória Aguda (IRAS) (20%)**:  Um espectro amplo de vírus pode causar sintomas semelhantes, incluindo rinovírus, adenovírus e outros.  A ausência de outros sintomas específicos dificulta a diferenciação.\n* **Hipótese 3: Pneumonia (5%)**: Embora menos provável neste estágio inicial, a possibilidade de pneumonia deve ser considerada, especialmente se os sintomas piorarem ou surgirem outros sinais como dispneia ou dor torácica.\n\n\n---\n\n### Clinical Reasoning\n\nA apresentação clínica de Junior, com febre alta, mialgia e tosse, sugere fortemente uma infecção viral respiratória.  A influenza é uma das principais causas de IRAS, apresentando esses sintomas classicamente.  A ausência de informações sobre o histórico médico e vacinação dificulta uma análise mais precisa, mas a probabilidade de influenza é considerada alta.  A hipótese de IRAS abrange outras possibilidades virais, enquanto a pneumonia é menos provável sem sintomas respiratórios mais graves.  O seguimento clínico é crucial para monitorar a evolução e descartar complicações.\n\n---\n\n### References\n\n* Síndrome Gripal – Ministério da Saúde https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/influenza\n* Diagnóstico e Tratamento da Influenza – Manual MSD  https://www.msdmanuals.com/pt-br/profissional/doenças-infecciosas/vírus-da-influenza/diagnóstico-e-tratamento-da-influenza\n\n\nAviso adicional: As informações fornecidas são consultativas e não substituem a validação clínica. Sempre verifique as fontes e assegure a tomada de decisão com base em avaliação médica.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:06:02.849348"
+          }
+        ]
+      },
+      {
+        "id": "5ec032e7-3f06-4f0d-a8f7-5c6f80af25b5",
+        "title": "Consulta em 05/07/2025 10:06:36",
+        "date": "2025-07-05T10:06:36.331820",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Estou com dor de cabeça a 4 dias, dor forte, frontal"
+              }
+            ],
+            "timestamp": "2025-07-05T10:06:52.676327"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Preciso de mais informações para gerar hipóteses diagnósticas.  Por favor, descreva a dor de cabeça com mais detalhes:\n\n* **Localização:** Você mencionou frontal, mas a dor irradia para outras áreas?\n* **Intensidade:** Em uma escala de 0 a 10, sendo 0 sem dor e 10 a pior dor imaginável, qual a intensidade da sua dor?\n* **Qualidade:** A dor é latejante, em aperto, constante, ou de outro tipo?\n* **Fatores desencadeantes:** Há alguma situação ou atividade que piora a dor?\n* **Fatores aliviadores:** Algo alivia a dor? (ex: repouso, analgésicos)\n* **Sintomas associados:** Você apresenta outros sintomas como náuseas, vômitos, fotofobia (sensibilidade à luz), fonofobia (sensibilidade a ruídos), rigidez na nuca, febre, alterações visuais?\n* **Histórico médico:** Você tem alguma doença crônica? Toma alguma medicação regularmente?\n* **Histórico familiar:** Há histórico de enxaqueca ou outras cefaleias na sua família?\n* **Uso de drogas:** Você usa alguma droga recreativa?\n\n\nFornecer essas informações adicionais me permitirá realizar uma análise mais completa e gerar hipóteses diagnósticas mais precisas.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:06:55.240373"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "apenas fronta, escala 5, dor latejante, abaixar a cabeça, tontura, sem doenças cronicas, sem drogas"
+              }
+            ],
+            "timestamp": "2025-07-05T10:07:46.495227"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Com base nas informações fornecidas, apresento as seguintes hipóteses diagnósticas:\n\n**Final Question: Please select the most appropriate diagnostic hypothesis:**\n\nA) **Enxaqueca (60%):**  A dor de cabeça frontal, latejante, com intensidade moderada (5/10), agravada pela inclinação da cabeça e associada a tontura, sugere fortemente enxaqueca.  A ausência de outros sintomas graves reduz a probabilidade de outras condições mais urgentes.\n\nB) **Cefaleia tensional (30%):** Embora a descrição da dor como latejante seja menos típica de cefaleia tensional,  a localização frontal e a intensidade moderada se encaixam.  A tontura pode ser um sintoma associado, embora menos frequente.\n\nC) **Sinusite (10%):** A dor frontal poderia ser sugestiva de sinusite, porém a ausência de outros sintomas como congestão nasal, secreção purulenta e febre reduz significativamente essa possibilidade.\n\n\n### Patient Data\n\n**Name:** Não fornecido\n**Date of Birth:** Não fornecido\n**Age:** Não fornecido\n**Sex:** Não fornecido\n\n---\n\n### Chief Complaint\n\nPaciente relata dor de cabeça frontal, latejante, com intensidade 5/10, há 4 dias.\n\n---\n\n### Current Illness History\n\nDor de cabeça frontal, latejante, intensidade 5/10, há 4 dias. A dor piora ao abaixar a cabeça.  Associada a tontura.\n\n---\n\n### Past Medical History\n\n* **Doenças crônicas:** Sem doenças crônicas relatadas.\n* **Medicamentos em uso:** Nenhum medicamento relatado.\n* **Hábitos de vida:** Não há informações disponíveis.\n\n---\n\n### Family History\n\nNão há informações disponíveis.\n\n---\n\n### Diagnostic Hypotheses\n\n* **Hipótese 1: Enxaqueca:** Dor de cabeça frontal, latejante, com intensidade moderada, piora ao abaixar a cabeça e associada à tontura. – Probabilidade: 60%\n* **Hipótese 2: Cefaleia tensional:** Dor de cabeça frontal, intensidade moderada. – Probabilidade: 30%\n* **Hipótese 3: Sinusite:** Dor frontal, mas sem outros sintomas típicos de sinusite. – Probabilidade: 10%\n\n---\n\n### Clinical Reasoning\n\nA apresentação clínica sugere enxaqueca devido à localização frontal, natureza latejante da dor, piora com a inclinação da cabeça e presença de tontura.  Cefaleia tensional é considerada uma possibilidade, embora menos provável devido à característica latejante da dor. Sinusite é menos provável pela ausência de outros sintomas.\n\n---\n\n### References\n\n* Nenhuma referência específica foi utilizada neste caso, devido à necessidade de mais informações do paciente para determinar um diagnóstico mais preciso.  Diagnósticos médicos exigem avaliação completa e exame físico.\n\n\nAviso adicional: As informações fornecidas são consultativas e não substituem a validação clínica. Sempre verifique as fontes e assegure a tomada de decisão com base em avaliação médica.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:07:51.581145"
+          }
+        ]
+      },
+      {
+        "id": "8e86ea31-6cab-4865-a2f8-2ae96cf1aa18",
+        "title": "Consulta em 05/07/2025 10:08:13",
+        "date": "2025-07-05T10:08:13.180109",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Febre a 4 dias, 39 graus, com gargante inflamanda"
+              }
+            ],
+            "timestamp": "2025-07-05T10:08:26.247839"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Preciso de mais informações para auxiliar no diagnóstico. Por favor, forneça detalhes adicionais sobre o paciente, incluindo:\n\n* **Dados demográficos:** Idade, sexo.\n* **Histórico médico:** Doenças pré-existentes, alergias, medicamentos em uso.\n* **Histórico familiar:**  Há casos de doenças infecciosas na família?\n* **Sintomas adicionais:** Além da febre e da dor de garganta, o paciente apresenta outros sintomas como tosse, coriza, dor de cabeça, fadiga, mal-estar geral, dificuldade para engolir, erupções cutâneas, etc.?  Descreva a intensidade de cada sintoma.\n* **Exames realizados:** Caso tenha realizado algum exame, como hemograma, por exemplo, por favor, forneça os resultados.\n\nQuanto mais informações você fornecer, mais preciso será o meu auxílio.  Após o fornecimento destas informações, poderei gerar hipóteses diagnósticas.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:08:28.138271"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "27 ANOS, masculino"
+              }
+            ],
+            "timestamp": "2025-07-05T10:13:17.868825"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Obrigado pela informação.  Ainda preciso de mais detalhes para formular hipóteses diagnósticas.  Por favor, descreva os seguintes pontos:\n\n* **Histórico médico:**  O paciente tem alguma doença pré-existente?  Toma algum medicamento regularmente?  Tem alergias?\n* **Histórico familiar:** Há histórico de doenças infecciosas na família?\n* **Sintomas adicionais:**  Quais outros sintomas o paciente apresenta além da febre (39 graus por 4 dias) e dor de garganta inflamada? (ex: tosse, coriza, dor de cabeça, dor muscular, erupções cutâneas, dificuldade para engolir, etc.) Descreva a intensidade de cada sintoma.\n* **Hábitos de vida:** O paciente fuma? Consome bebidas alcoólicas?  Tem alguma exposição recente a pessoas doentes?\n\n\nSomente com informações mais completas poderei auxiliar na avaliação do caso.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:13:20.497986"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "tomo dorflex, nao tem alergia, sem historico, paciente bebe frequentemente,"
+              }
+            ],
+            "timestamp": "2025-07-05T10:13:56.216041"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Ok.  Ainda precisamos de informações cruciais para uma análise completa.  Por favor, responda o mais detalhadamente possível às seguintes perguntas:\n\n\n* **Sintomas adicionais:** Além da febre (39 graus Celsius por 4 dias) e da dor de garganta inflamada, o paciente apresenta outros sintomas?  Descreva cada um deles com detalhes sobre intensidade, duração e características (ex: tosse seca ou produtiva, coriza, dor de cabeça - localização e intensidade,  dificuldade para engolir,  manchas na pele,  etc.).\n* **Frequência do consumo de álcool:** O que você considera \"frequentemente\"?  Quantas vezes por semana e qual a quantidade consumida em cada ocasião?  Esse consumo é recente ou crônico?\n* **Dorflex:** Qual a composição do Dorflex que o paciente utiliza?  E qual a dosagem e a frequência de uso?\n* **Exposição a pessoas doentes:** O paciente teve contato com alguma pessoa com sintomas semelhantes ou com qualquer infecção nos últimos dias?\n\nSem esses detalhes, não é possível gerar hipóteses diagnósticas com segurança.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:13:58.524865"
+          }
+        ]
+      },
+      {
+        "id": "f42ef762-ec33-4ee7-9bf5-8e8683d96087",
+        "title": "Consulta em 05/07/2025 10:14:30",
+        "date": "2025-07-05T10:14:30.531903",
+        "chat_history": [
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "Históricos importados de consultas anteriores: 847b2fe2..., 5ec032e7...."
+              }
+            ],
+            "timestamp": "2025-07-05T10:14:30.527875"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Início do Histórico da Consulta 847b2fe2... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:14:30.528882"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Olá meu nome é junior, estou com febre alta a 3 dias"
+              }
+            ],
+            "timestamp": "2025-07-05T10:05:25.407506"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Olá, Junior. Sou o Co-Pilot Médico, um assistente de IA para suporte ao diagnóstico médico.  Para auxiliá-lo da melhor forma possível, preciso de mais informações sobre seus sintomas.  Por favor, descreva detalhadamente:\n\n* **A intensidade da febre:**  Qual a temperatura medida (em graus Celsius ou Fahrenheit)?  Utilizou termômetro?\n* **Outros sintomas:** Além da febre, você apresenta outros sintomas como dor de cabeça, dor muscular, tosse, coriza, diarreia, vômitos, dor de garganta, fadiga, etc.? Descreva a intensidade e duração de cada um.\n* **Histórico médico:** Você possui alguma doença crônica? Faz uso de algum medicamento regularmente? Tem alergias?\n* **Histórico vacinal:** Você está em dia com suas vacinas?\n* **Exposição a doenças infecciosas:** Você teve contato com alguma pessoa doente recentemente? Viajou para alguma região com surtos epidemiológicos?\n\nQuanto mais detalhes você fornecer, mais preciso será o meu auxílio.  Lembre-se que minhas informações são apenas consultativas e não substituem uma consulta médica.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:05:27.588072"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "39 graus de febre, dor muscular, tosse, sem vacinas, sem contato com pessoas doentes"
+              }
+            ],
+            "timestamp": "2025-07-05T10:05:58.377819"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "### Patient Data\n\n**Name:** Junior\n**Date of Birth:**  Não informado\n**Age:** Não informado\n**Sex:** Não informado\n\n---\n\n### Chief Complaint\n\nPaciente relata febre alta (39 graus), dor muscular e tosse há 3 dias.\n\n---\n\n### Current Illness History\n\nFebre de 39 graus Celsius há três dias, acompanhada de mialgia e tosse.  Não há relato de outros sintomas como dor de garganta, coriza, diarreia ou vômitos.  Nega contato recente com pessoas doentes.  Histórico vacinal não informado.\n\n---\n\n### Past Medical History\n\nNão informado.\n\n---\n\n### Family History\n\nNão informado.\n\n---\n\n### Diagnostic Hypotheses\n\n* **Hipótese 1: Influenza (Gripe) (75%)**:  A combinação de febre alta, mialgia e tosse é sugestiva de infecção viral, sendo a influenza uma das causas mais prevalentes.\n* **Hipótese 2: Infecção Viral Respiratória Aguda (IRAS) (20%)**:  Um espectro amplo de vírus pode causar sintomas semelhantes, incluindo rinovírus, adenovírus e outros.  A ausência de outros sintomas específicos dificulta a diferenciação.\n* **Hipótese 3: Pneumonia (5%)**: Embora menos provável neste estágio inicial, a possibilidade de pneumonia deve ser considerada, especialmente se os sintomas piorarem ou surgirem outros sinais como dispneia ou dor torácica.\n\n\n---\n\n### Clinical Reasoning\n\nA apresentação clínica de Junior, com febre alta, mialgia e tosse, sugere fortemente uma infecção viral respiratória.  A influenza é uma das principais causas de IRAS, apresentando esses sintomas classicamente.  A ausência de informações sobre o histórico médico e vacinação dificulta uma análise mais precisa, mas a probabilidade de influenza é considerada alta.  A hipótese de IRAS abrange outras possibilidades virais, enquanto a pneumonia é menos provável sem sintomas respiratórios mais graves.  O seguimento clínico é crucial para monitorar a evolução e descartar complicações.\n\n---\n\n### References\n\n* Síndrome Gripal – Ministério da Saúde https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/influenza\n* Diagnóstico e Tratamento da Influenza – Manual MSD  https://www.msdmanuals.com/pt-br/profissional/doenças-infecciosas/vírus-da-influenza/diagnóstico-e-tratamento-da-influenza\n\n\nAviso adicional: As informações fornecidas são consultativas e não substituem a validação clínica. Sempre verifique as fontes e assegure a tomada de decisão com base em avaliação médica.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:06:02.849348"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Fim do Histórico da Consulta 847b2fe2... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:14:30.528882"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Início do Histórico da Consulta 5ec032e7... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:14:30.529387"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Estou com dor de cabeça a 4 dias, dor forte, frontal"
+              }
+            ],
+            "timestamp": "2025-07-05T10:06:52.676327"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Preciso de mais informações para gerar hipóteses diagnósticas.  Por favor, descreva a dor de cabeça com mais detalhes:\n\n* **Localização:** Você mencionou frontal, mas a dor irradia para outras áreas?\n* **Intensidade:** Em uma escala de 0 a 10, sendo 0 sem dor e 10 a pior dor imaginável, qual a intensidade da sua dor?\n* **Qualidade:** A dor é latejante, em aperto, constante, ou de outro tipo?\n* **Fatores desencadeantes:** Há alguma situação ou atividade que piora a dor?\n* **Fatores aliviadores:** Algo alivia a dor? (ex: repouso, analgésicos)\n* **Sintomas associados:** Você apresenta outros sintomas como náuseas, vômitos, fotofobia (sensibilidade à luz), fonofobia (sensibilidade a ruídos), rigidez na nuca, febre, alterações visuais?\n* **Histórico médico:** Você tem alguma doença crônica? Toma alguma medicação regularmente?\n* **Histórico familiar:** Há histórico de enxaqueca ou outras cefaleias na sua família?\n* **Uso de drogas:** Você usa alguma droga recreativa?\n\n\nFornecer essas informações adicionais me permitirá realizar uma análise mais completa e gerar hipóteses diagnósticas mais precisas.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:06:55.240373"
+          },
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "apenas fronta, escala 5, dor latejante, abaixar a cabeça, tontura, sem doenças cronicas, sem drogas"
+              }
+            ],
+            "timestamp": "2025-07-05T10:07:46.495227"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Com base nas informações fornecidas, apresento as seguintes hipóteses diagnósticas:\n\n**Final Question: Please select the most appropriate diagnostic hypothesis:**\n\nA) **Enxaqueca (60%):**  A dor de cabeça frontal, latejante, com intensidade moderada (5/10), agravada pela inclinação da cabeça e associada a tontura, sugere fortemente enxaqueca.  A ausência de outros sintomas graves reduz a probabilidade de outras condições mais urgentes.\n\nB) **Cefaleia tensional (30%):** Embora a descrição da dor como latejante seja menos típica de cefaleia tensional,  a localização frontal e a intensidade moderada se encaixam.  A tontura pode ser um sintoma associado, embora menos frequente.\n\nC) **Sinusite (10%):** A dor frontal poderia ser sugestiva de sinusite, porém a ausência de outros sintomas como congestão nasal, secreção purulenta e febre reduz significativamente essa possibilidade.\n\n\n### Patient Data\n\n**Name:** Não fornecido\n**Date of Birth:** Não fornecido\n**Age:** Não fornecido\n**Sex:** Não fornecido\n\n---\n\n### Chief Complaint\n\nPaciente relata dor de cabeça frontal, latejante, com intensidade 5/10, há 4 dias.\n\n---\n\n### Current Illness History\n\nDor de cabeça frontal, latejante, intensidade 5/10, há 4 dias. A dor piora ao abaixar a cabeça.  Associada a tontura.\n\n---\n\n### Past Medical History\n\n* **Doenças crônicas:** Sem doenças crônicas relatadas.\n* **Medicamentos em uso:** Nenhum medicamento relatado.\n* **Hábitos de vida:** Não há informações disponíveis.\n\n---\n\n### Family History\n\nNão há informações disponíveis.\n\n---\n\n### Diagnostic Hypotheses\n\n* **Hipótese 1: Enxaqueca:** Dor de cabeça frontal, latejante, com intensidade moderada, piora ao abaixar a cabeça e associada à tontura. – Probabilidade: 60%\n* **Hipótese 2: Cefaleia tensional:** Dor de cabeça frontal, intensidade moderada. – Probabilidade: 30%\n* **Hipótese 3: Sinusite:** Dor frontal, mas sem outros sintomas típicos de sinusite. – Probabilidade: 10%\n\n---\n\n### Clinical Reasoning\n\nA apresentação clínica sugere enxaqueca devido à localização frontal, natureza latejante da dor, piora com a inclinação da cabeça e presença de tontura.  Cefaleia tensional é considerada uma possibilidade, embora menos provável devido à característica latejante da dor. Sinusite é menos provável pela ausência de outros sintomas.\n\n---\n\n### References\n\n* Nenhuma referência específica foi utilizada neste caso, devido à necessidade de mais informações do paciente para determinar um diagnóstico mais preciso.  Diagnósticos médicos exigem avaliação completa e exame físico.\n\n\nAviso adicional: As informações fornecidas são consultativas e não substituem a validação clínica. Sempre verifique as fontes e assegure a tomada de decisão com base em avaliação médica.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:07:51.581145"
+          },
+          {
+            "role": "bot",
+            "parts": [
+              {
+                "text": "--- Fim do Histórico da Consulta 5ec032e7... ---"
+              }
+            ],
+            "timestamp": "2025-07-05T10:14:30.529387"
+          }
+        ]
+      }
+    ]
+  },
+  "4095dd45-2211-45e6-b65a-a21b35724ea3": {
+    "name": "João Neto",
+    "chat_history": [],
+    "consultations": [
+      {
+        "id": "6184737f-8636-4cc2-ac8c-99d41e0d995e",
+        "title": "Primeira Consulta",
+        "date": "2025-07-05T10:01:56.357077",
+        "chat_history": []
+      },
+      {
+        "id": "95505302-6362-48bb-9270-affd3216a68d",
+        "title": "Consulta em 05/07/2025 10:02:04",
+        "date": "2025-07-05T10:02:04.355224",
+        "chat_history": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Olá"
+              }
+            ],
+            "timestamp": "2025-07-05T10:02:25.700357"
+          },
+          {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Olá! Sou o Co-Pilot Médico, um assistente de IA projetado para auxiliar médicos no processo de diagnóstico.  Para que eu possa fornecer suporte adequado, preciso de informações clínicas detalhadas sobre o paciente. Por favor, forneça dados relevantes como histórico médico, queixas principais, exames e outros detalhes relevantes.  Quanto mais informações você fornecer, mais preciso será meu auxílio.\n"
+              }
+            ],
+            "timestamp": "2025-07-05T10:02:27.172464"
+          }
+        ]
+      }
+    ]
+  }
+}

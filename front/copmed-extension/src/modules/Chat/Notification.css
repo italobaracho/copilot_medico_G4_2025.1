@@ -1,0 +1,106 @@
+/* src/components/Notification.css */
+
+.notification-container {
+  position: fixed; /* Fixa na tela */
+  top: 20px; /* Distância do topo */
+  right: 20px; /* Distância da direita */
+  z-index: 1000; /* Garante que fique acima de outros elementos */
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaço entre ícone, mensagem e botão */
+
+  opacity: 0; /* Começa invisível para animação */
+  transform: translateY(-20px); /* Começa um pouco acima para animação */
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Transição para aparecer/desaparecer */
+}
+
+/* Tipos de notificação */
+.notification-success {
+  background-color: #4CAF50; /* Verde */
+}
+
+.notification-error {
+  background-color: #f44336; /* Vermelho */
+}
+
+.notification-info {
+  background-color: #2196F3; /* Azul */
+}
+
+/* Animação de entrada */
+.notification-container.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animação de saída (opcional, controlada pelo state isVisible) */
+.notification-container.hide {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+
+.notification-icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.notification-message {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  flex-grow: 1; /* Permite que a mensagem ocupe o espaço */
+}
+
+.notification-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.notification-close-btn:hover {
+  opacity: 1;
+}
+
+/* Animação de "pulinho" no sucesso */
+@keyframes bounceIn {
+  0%, 20%, 40%, 60%, 80%, 100% {
+    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+  0% {
+    opacity: 0;
+    transform: scale3d(.3, .3, .3);
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  40% {
+    transform: scale3d(.9, .9, .9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+  80% {
+    transform: scale3d(.97, .97, .97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.notification-container.show.notification-success {
+  animation: bounceIn 0.8s forwards; /* Aplica a animação no sucesso */
+}

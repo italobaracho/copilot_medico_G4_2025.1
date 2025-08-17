@@ -71,6 +71,12 @@
 
 4. Inicie o servidor:
    No diretório API:
+
+   Instalar Flask-Cors antes de iniciar o SERVER.PY
+
+    ```bash
+   pip install Flask-Cors
+   ```
    ```bash
    python server.py
    ```
