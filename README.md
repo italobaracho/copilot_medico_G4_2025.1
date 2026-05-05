@@ -85,3 +85,4 @@
    - A extensão deve aparecer na sua barra de ferramentas. Clique nela para começar a usar!
 
 ---
+Proposta de melhoria arquitetural depois
